@@ -11,8 +11,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -33,11 +36,21 @@ public class SlotGameController {
     }
 
     @PostMapping("/benchmark")
-    public String benchmark(@RequestParam int spins) throws ExecutionException, InterruptedException {
-        long start = System.nanoTime();
+    public Map<String, Object> benchmark(@RequestParam int spins) throws ExecutionException, InterruptedException {
+        long startTime = System.nanoTime();
+
         List<SpinResult> results = slotGameService.executeMultipleSpins(spins);
-        long end = System.nanoTime();
-        long duration = (end - start) / 1_000_000; // Convert to milliseconds
-        return "Executed " + spins + " spins in " + duration + " ms (" + (spins * 1000.0 / duration) + " spins/sec)";
+
+        long endTime = System.nanoTime();
+        long durationMs = (endTime - startTime) / 1_000_000; // Convert to milliseconds
+        double spinsPerSecond = (durationMs > 0) ? (spins * 1000.0 / durationMs) : 0; // Prevent division by zero
+
+        // ✅ Refactored Map construction
+        return new HashMap<>(Map.of(
+                "totalSpins", spins,
+                "averageWin", results.stream().collect(Collectors.averagingInt(SpinResult::getTotalWin)),
+                "executionTimeMs", durationMs,
+                "spinsPerSecond", spinsPerSecond
+        ));
     }
 }
