@@ -1,0 +1,9 @@
+pluginManagement {
+    repositories {
+
+    }
+    plugins {
+    }
+}
+
+rootProject.name = 'slotgame'
