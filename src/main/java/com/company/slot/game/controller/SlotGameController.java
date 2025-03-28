@@ -1,6 +1,5 @@
 package com.company.slot.game.controller;
 
-import com.company.slot.game.SlotGameApplication;
 import com.company.slot.game.config.GameConfig;
 import com.company.slot.game.entity.GameConfigResponse;
 import com.company.slot.game.entity.SpinResult;
@@ -8,7 +7,6 @@ import com.company.slot.game.service.SlotGameService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -45,7 +43,7 @@ public class SlotGameController {
         long durationMs = (endTime - startTime) / 1_000_000; // Convert to milliseconds
         double spinsPerSecond = (durationMs > 0) ? (spins * 1000.0 / durationMs) : 0; // Prevent division by zero
 
-        // ✅ Refactored Map construction
+        // Refactored Map construction
         return new HashMap<>(Map.of(
                 "totalSpins", spins,
                 "averageWin", results.stream().collect(Collectors.averagingInt(SpinResult::getTotalWin)),
